@@ -2,14 +2,13 @@ package com.melodicbridge.melodic_bridge.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.HstsConfig;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.XXssConfig;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -30,10 +29,10 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()  // H2 콘솔 경로 허용
                 .anyRequest().permitAll()  // 모든 요청 허용
             )
-            .csrf(csrf -> csrf.disable())  // CSRF 보호 비활성화
+            .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
             .headers(headers -> headers
-                .httpStrictTransportSecurity(h -> h.disable())  // HSTS 비활성화 (필요시)
-                .xssProtection(xss -> xss.disable()) // XSS 보호 비활성화 (필요시)
+                .httpStrictTransportSecurity(HstsConfig::disable)  // HSTS 비활성화 (필요시)
+                .xssProtection(XXssConfig::disable) // XSS 보호 비활성화 (필요시)
                 .contentSecurityPolicy(csp -> csp.policyDirectives("frame-ancestors 'self' *"))  // iframe 허용 설정
             );
 
