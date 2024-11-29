@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @Configuration
@@ -36,5 +38,16 @@ public class SecurityConfig {
             );
 
         return http.build(); // 필터 체인 반환
+    }
+
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/api/**")
+                    .allowedOrigins("http://localhost:3000") // 클라이언트의 URL
+                    .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드
+                    .allowedHeaders("*");
+        }
     }
 }
