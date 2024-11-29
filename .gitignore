@@ -1,6 +1,7 @@
 # 디폴트 무시된 파일
-/shelf/
+/.idea/shelf/
 /workspace.xml
+
 
 # 에디터 기반 HTTP 클라이언트 요청
 /httpRequests/
@@ -18,3 +19,7 @@ target/
 # 추가로 무시할 파일들
 *.bin
 *.lock
+
+# Gradle 관련 파일들 무시
+.gradle/
+build/
