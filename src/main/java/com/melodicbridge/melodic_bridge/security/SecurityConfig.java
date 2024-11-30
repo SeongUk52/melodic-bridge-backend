@@ -1,4 +1,4 @@
-package com.melodicbridge.melodic_bridge.config;
+package com.melodicbridge.melodic_bridge.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
