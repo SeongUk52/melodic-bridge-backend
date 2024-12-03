@@ -1,8 +1,11 @@
 package com.melodicbridge.melodic_bridge.controller;
 
 import com.melodicbridge.melodic_bridge.domain.User;
+import com.melodicbridge.melodic_bridge.dto.LoginRequest;
+import com.melodicbridge.melodic_bridge.dto.LoginResponse;
 import com.melodicbridge.melodic_bridge.security.JwtTokenProvider;
 import com.melodicbridge.melodic_bridge.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,12 +34,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
-            // 로그인 로직
-            return ResponseEntity.ok("User logged in successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            // 1. 사용자가 보낸 username과 password로 로그인
+            String token = userService.login(loginRequest.username(), loginRequest.password());
+
+            // 2. 로그인 성공 시 JWT 토큰 반환
+            return ResponseEntity.ok(new LoginResponse(token));
+        } catch (RuntimeException e) {
+            // 3. 로그인 실패 시 401 Unauthorized 반환
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 }
