@@ -1,5 +1,6 @@
 package com.melodicbridge.melodic_bridge.security;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,11 +11,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey = "your-secret-key"; // JWT 서명용 키 (환경 변수나 안전한 저장소에 저장 권장)
+    private String secretKey; // JWT 서명용 키 (환경 변수나 안전한 저장소에 저장 권장)
     private final long validityInMilliseconds = 3600000; // 1시간 유효 기간
 
     // 토큰 생성 메서드
     public String generateToken(String username) {
+        Dotenv dotenv = Dotenv.configure().load();
+        this.secretKey = dotenv.get("JWT_SECRET_KEY");
         Claims claims = Jwts.claims().setSubject(username); // 토큰에 사용자 정보 저장
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);

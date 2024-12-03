@@ -28,3 +28,6 @@ spring:
     headers:
       frame:
         options: disable  # X-Frame-Options 헤더 비활성화
+
+  jwt:
+    secret: ${JWT_SECRET_KEY}
