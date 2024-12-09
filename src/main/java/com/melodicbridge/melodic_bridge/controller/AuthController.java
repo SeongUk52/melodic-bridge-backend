@@ -38,7 +38,7 @@ public class AuthController {
         try {
             // 1. 사용자가 보낸 username과 password로 로그인
             String token = userService.login(loginRequest.username(), loginRequest.password());
-
+            //System.out.println("Generated token: " + token);
             // 2. 로그인 성공 시 JWT 토큰 반환
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (RuntimeException e) {

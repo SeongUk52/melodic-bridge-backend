@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -18,16 +19,20 @@ public class JwtTokenProvider {
     public String generateToken(String username) {
         Dotenv dotenv = Dotenv.configure().load();
         this.secretKey = dotenv.get("JWT_SECRET_KEY");
+        //System.out.println("Secret Key: " + this.secretKey);
         Claims claims = Jwts.claims().setSubject(username); // 토큰에 사용자 정보 저장
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity) // 만료 시간 설정
-                .signWith(SignatureAlgorithm.HS256, secretKey) // 서명 알고리즘과 키 설정
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes(StandardCharsets.UTF_8)) // 서명 알고리즘과 키 설정
                 .compact();
+
+        //System.out.println("Generated Token: " + token);
+        return token;
     }
 
     // 토큰에서 사용자 이름 추출
