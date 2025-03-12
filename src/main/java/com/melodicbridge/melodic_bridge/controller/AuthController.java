@@ -43,6 +43,7 @@ public class AuthController {
             String token = userService.login(loginRequest.username(), loginRequest.password());
             //System.out.println("Generated token: " + token);
             // 2. 로그인 성공 시 JWT 토큰 반환
+            System.out.println(token);
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (RuntimeException e) {
             // 3. 로그인 실패 시 401 Unauthorized 반환
@@ -52,6 +53,7 @@ public class AuthController {
 
     @PostMapping("/me")
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
+        System.out.println(token);
         try {
             System.out.println("Received token: " + token); // 1. 토큰 확인
             String username = jwtTokenProvider.getUsernameFromToken(token);
