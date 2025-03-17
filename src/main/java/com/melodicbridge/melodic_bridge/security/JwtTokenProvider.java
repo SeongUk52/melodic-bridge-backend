@@ -37,8 +37,14 @@ public class JwtTokenProvider {
 
     // 토큰에서 사용자 이름 추출
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7); // "Bearer " 제거
+        }
+
+
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+                .build() // 최신 방식에서는 `build()`가 필요함
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();

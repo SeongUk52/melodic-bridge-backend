@@ -5,8 +5,6 @@ import com.melodicbridge.melodic_bridge.dto.LoginRequest;
 import com.melodicbridge.melodic_bridge.dto.LoginResponse;
 import com.melodicbridge.melodic_bridge.security.JwtTokenProvider;
 import com.melodicbridge.melodic_bridge.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,26 +34,37 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
             // 1. 사용자가 보낸 username과 password로 로그인
             String token = userService.login(loginRequest.username(), loginRequest.password());
-
-            // 2. HttpOnly 쿠키 생성 및 설정
-            Cookie jwtCookie = new Cookie("jwt", token);
-            jwtCookie.setHttpOnly(true); // HttpOnly 설정
-            jwtCookie.setSecure(true);  // HTTPS에서만 동작 (개발 환경에서는 false로 설정 가능)
-            jwtCookie.setPath("/");    // 애플리케이션 전체에 쿠키 적용
-            jwtCookie.setMaxAge(7 * 24 * 60 * 60); // 7일간 유효
-
-            // 3. 응답에 쿠키 추가
-            response.addCookie(jwtCookie);
-
-            // 4. 응답 본문으로 메시지 반환 (선택 사항)
-            return ResponseEntity.ok("로그인 성공");
+            //System.out.println("Generated token: " + token);
+            // 2. 로그인 성공 시 JWT 토큰 반환
+            return ResponseEntity.ok(new LoginResponse(token));
         } catch (RuntimeException e) {
-            // 5. 로그인 실패 시 401 Unauthorized 반환
+            // 3. 로그인 실패 시 401 Unauthorized 반환
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
+        System.out.println(token);
+        try {
+            System.out.println("Received token: " + token); // 1. 토큰 확인
+            String username = jwtTokenProvider.getUsernameFromToken(token);
+            System.out.println("Extracted username: " + username); // 2. 유저네임 확인
+
+            Optional<User> user = userService.findByUsername(username);
+            if (user.isEmpty()) {
+                System.out.println("User not found for username: " + username);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            e.printStackTrace(); // 콘솔에 오류 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
     }
 }
