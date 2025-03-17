@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Group {
+public class GroupTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +22,6 @@ public class Group {
 
     private String description;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "groupTable")
     private List<GroupMember> groupMembers = new ArrayList<>();
 }

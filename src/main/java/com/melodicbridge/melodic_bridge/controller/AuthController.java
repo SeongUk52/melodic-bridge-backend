@@ -3,12 +3,15 @@ package com.melodicbridge.melodic_bridge.controller;
 import com.melodicbridge.melodic_bridge.domain.User;
 import com.melodicbridge.melodic_bridge.dto.LoginRequest;
 import com.melodicbridge.melodic_bridge.dto.LoginResponse;
+import com.melodicbridge.melodic_bridge.dto.UserDTO;
 import com.melodicbridge.melodic_bridge.security.JwtTokenProvider;
 import com.melodicbridge.melodic_bridge.service.UserService;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +43,7 @@ public class AuthController {
             String token = userService.login(loginRequest.username(), loginRequest.password());
             //System.out.println("Generated token: " + token);
             // 2. 로그인 성공 시 JWT 토큰 반환
+            System.out.println(token);
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (RuntimeException e) {
             // 3. 로그인 실패 시 401 Unauthorized 반환
